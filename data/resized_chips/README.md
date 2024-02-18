@@ -1,0 +1,1 @@
+The folder that consists resized files.

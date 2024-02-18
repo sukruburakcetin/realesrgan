@@ -1,0 +1,1 @@
+The folder that consists output(enhanced with real-esrgan) files.
