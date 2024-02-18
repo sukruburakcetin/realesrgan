@@ -88,10 +88,6 @@ def run_cmd(command):
         sys.exit(1)
 
 
-# run_cmd("pip install basicsr")
-# run_cmd("pip freeze")
-
-
 def inference(INPUT_DIR, OUTPUT_DIR, mode, anti_alias):
     filelist = []
     for file in os.listdir(INPUT_DIR):
@@ -105,7 +101,10 @@ def inference(INPUT_DIR, OUTPUT_DIR, mode, anti_alias):
             wpercent = (basewidth / float(img.size[0]))
             hsize = int((float(img.size[1]) * float(wpercent)))
 
-            img = img.resize((basewidth, hsize), Image.ANTIALIAS)
+            # for pillow versions lower than Pillow 10.0.0(cpu pytorch) use ANTIALIAS:
+            # img = img.resize((basewidth, hsize), Image.ANTIALIAS)
+            # for pillow versions higher than Pillow 10.0.0(gpu pytorch(overrides)) use Resampling.LANCZOS:
+            img = img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
             img.save(INPUT_DIR + "\\" + os.path.basename(filelist[i]))
     else:
         pass
@@ -139,7 +138,7 @@ def main():
         return
 
     image_path = input("Enter the path to the input images: ").strip()
-    enhanced_path = input("Enter the path to the output images: ").strip()
+    enhanced_path = input("Enter the path to the output(real-esrgan enhanced) images: ").strip()
 
     if mode == "base":
         sharpened_path = input("Enter the path to the sharpened images (optional, press Enter to skip): ").strip()
@@ -233,7 +232,7 @@ def main():
         if p == image_path:
             print("Input images path:", p)
         elif p == enhanced_path:
-            print("Output images path:", p)
+            print("Output(real-esrgan enhanced) images path:", p)
         elif p == sharpened_path:
             print("Sharpened images path:", p)
         elif p == resized_path:
